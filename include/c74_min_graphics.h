@@ -454,6 +454,24 @@ namespace c74::min::ui {
         }
     };
 
+    template<draw_style style = stroke>
+	class tri : public element {
+	public:
+		template<typename... ARGS>
+		tri(ARGS... args) {
+			handle_arguments(args...);
+			update();
+			double x1 = m_rect.x - m_rect.width * 0.5;
+			double x2 = m_rect.x;
+			double x3 = m_rect.x + m_rect.width * 0.5;
+			double y1 = m_rect.y - m_rect.height * 0.5;
+			double y2 = m_rect.y + m_rect.height * 0.5;
+            double y3 = m_rect.y - m_rect.height * 0.5;
+			max::jgraphics_triangle(*m_target, x1, y1, x2, y2, x3, y3);
+			draw<style>(*m_target);
+		}
+	};
+
 
     template<draw_style style = stroke>
     class ellipse : public element {
