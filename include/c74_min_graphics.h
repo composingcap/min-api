@@ -283,19 +283,19 @@ namespace c74::min::ui {
     class rotation {
     public:
         rotation(const number a_value)
-//		: m_value { a_value }
+		: m_value { a_value }
         {}
 
-        void apply() {
-
-        }
+        void operator()(number& n) const {
+			n = m_value;
+		}
 
         void cleanup() {
 
         }
 
     private:
-//		number m_value;
+		number m_value;
     };
 
 
@@ -322,6 +322,13 @@ namespace c74::min::ui {
         assign_from_argument(const argument_type& arg) noexcept {
             arg(m_rect);
         }
+
+        /// constructor utility: rotation
+		template<typename argument_type>
+		constexpr typename enable_if<is_same<argument_type, rotation>::value>::type assign_from_argument(
+			const argument_type& arg) noexcept {
+			arg(m_rot);
+		}
 
         /// constructor utility: size
         template<typename argument_type>
@@ -417,6 +424,7 @@ namespace c74::min::ui {
         std::unique_ptr<target>		m_target;
         max::t_rect					m_rect {};
         max::t_rect					m_misc {};
+		number                      m_rot;
         color						m_color;
         string						m_text;
     };
@@ -461,12 +469,28 @@ namespace c74::min::ui {
 		tri(ARGS... args) {
 			handle_arguments(args...);
 			update();
-			double x1 = m_rect.x - m_rect.width * 0.5;
-			double x2 = m_rect.x;
-			double x3 = m_rect.x + m_rect.width * 0.5;
-			double y1 = m_rect.y - m_rect.height * 0.5;
-			double y2 = m_rect.y + m_rect.height * 0.5;
-            double y3 = m_rect.y - m_rect.height * 0.5;
+			double rot = m_rot * TWOPI;
+			double s   = sin(rot);
+			double c   = cos(rot);
+
+			double dx1 = -m_rect.width * 0.5;
+			double dx2 = 0;
+			double dx3 = m_rect.width * 0.5;
+			double dy1 = -m_rect.height * 0.5;
+			double dy2 = m_rect.height * 0.5;
+            double dy3 = -m_rect.height * 0.5;
+
+            double x1 = m_rect.x + (dx1 * c - dy1 * s);
+			double y1 = m_rect.y + (dx1 * s + dy1 * c);
+
+            double x2 = m_rect.x + (dx2 * c - dy2 * s);
+			double y2 = m_rect.y + (dx2 * s + dy2 * c);
+
+            double x3 = m_rect.x + (dx3 * c - dy3 * s);
+			double y3 = m_rect.y + (dx3 * s + dy3 * c);
+
+
+            double x1New = m_rect.x - m_rect.width * 0.5;
 			max::jgraphics_triangle(*m_target, x1, y1, x2, y2, x3, y3);
 			draw<style>(*m_target);
 		}
