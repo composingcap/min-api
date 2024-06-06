@@ -16,7 +16,7 @@ namespace c74::min {
     };
 
 
-    template<int default_width_type = 20, int default_height_type = 20>
+    template<int default_width_type = 20, int default_height_type = 20, bool fixed_aspect = false>
     class ui_operator : public ui_operator_base {
     public:
         explicit ui_operator(object_base* instance, const atoms& args)
@@ -32,13 +32,13 @@ namespace c74::min {
              //	| JBOX_TRANSPARENT		// 3
              //	| JBOX_NOGROW			// 4
              //	| JBOX_GROWY			// 5
-                | JBOX_GROWBOTH			// 6
+             // | JBOX_GROWBOTH			// 6
              //	| JBOX_IGNORELOCKCLICK	// 7
              //	| JBOX_HILITE			// 8
                 | JBOX_BACKGROUND		// 9
              //	| JBOX_NOFLOATINSPECTOR	// 10
              // | c74::max::JBOX_TEXTFIELD		// 11
-             //   | c74::max::JBOX_MOUSEDRAGDELTA	// 12
+             // | c74::max::JBOX_MOUSEDRAGDELTA	// 12
              //	| JBOX_COLOR			// 13
              //	| JBOX_BINBUF			// 14
              //	| JBOX_DRAWIOLOCKED		// 15
@@ -58,6 +58,13 @@ namespace c74::min {
             }
             if (m_instance->is_focusable()) {
                 flags |= JBOX_HILITE;
+            }
+
+            if (fixed_aspect) {
+				flags |= JBOX_GROWY;
+            }
+            else {
+				flags |= JBOX_GROWBOTH;
             }
 
             const c74::max::t_atom* argv = args.empty() ? nullptr : &args[0];
