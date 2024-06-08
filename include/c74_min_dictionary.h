@@ -9,6 +9,12 @@ namespace c74::min {
 
     class dict {
     public:
+		enum class DICT_TYPE { 
+            NONE = 0,
+            DICT = 1,
+            STRING = 2,
+            ATOMS = 3,
+        };
         /// Create (or reference an existing) dictionary by name
         dict(const symbol name) {
             auto d = max::dictobj_findregistered_retain(name);
@@ -57,6 +63,7 @@ namespace c74::min {
         ~dict() {
             if (m_has_ownership)
                 object_free(m_instance);
+			freeKeys();
         }
 
 
@@ -110,6 +117,28 @@ namespace c74::min {
             return (*this)[skey];
         };
 
+        max::t_symbol** getKeys() {
+			keyCount_ = dictionary_getentrycount(m_instance);
+			max::dictionary_getkeys(m_instance, &keyCount_, &keys);
+			return keys;
+         }
+
+        long keyCount() {
+			return keyCount_;
+        }
+        void freeKeys() {
+			if (keys != nullptr)
+			dictionary_freekeys(m_instance, keyCount_, keys);
+			keyCount_ = 0;
+        }
+
+        DICT_TYPE getType(max::t_symbol* key) {
+			if (!dictionary_hasentry(m_instance, key)) return DICT_TYPE::NONE;
+			if (dictionary_entryisstring(m_instance, key)) return DICT_TYPE::STRING;
+			if (dictionary_entryisdictionary(m_instance, key))return DICT_TYPE::DICT;
+			if (dictionary_entryisatomarray(m_instance, key))	return DICT_TYPE ::ATOMS;       
+        }
+
 
         symbol name() const {
             return dictobj_namefromptr(m_instance);
@@ -149,6 +178,8 @@ namespace c74::min {
     private:
         max::t_dictionary* m_instance       { nullptr };
         bool               m_has_ownership  { true };
+		max::t_symbol**    keys     = nullptr;
+		long               keyCount_ = 0;
     };
 
 }    // namespace c74::min
