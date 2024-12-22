@@ -112,6 +112,11 @@ namespace c74::min {
             return at(key);
         };
 
+        void setArray(symbol key, atoms &arr)
+        {
+            max::dictionary_appendatoms(m_instance, key, arr.size(), arr.data());
+        }
+
         atom_reference operator[](int key) {
             symbol skey{key};
             return (*this)[skey];
