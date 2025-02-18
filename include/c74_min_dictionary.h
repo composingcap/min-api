@@ -129,6 +129,7 @@ namespace c74::min {
          }
 
         long keyCount() {
+                        keyCount_ = dictionary_getentrycount(m_instance);
 			return keyCount_;
         }
         void freeKeys() {
