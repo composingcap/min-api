@@ -142,7 +142,8 @@ namespace c74::min {
 			if (!dictionary_hasentry(m_instance, key)) return DICT_TYPE::NONE;
 			if (dictionary_entryisstring(m_instance, key)) return DICT_TYPE::STRING;
 			if (dictionary_entryisdictionary(m_instance, key))return DICT_TYPE::DICT;
-			if (dictionary_entryisatomarray(m_instance, key))	return DICT_TYPE ::ATOMS;       
+			if (dictionary_entryisatomarray(m_instance, key))	return DICT_TYPE ::ATOMS;      
+            return DICT_TYPE::NONE; 
         }
 
 
